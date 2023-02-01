@@ -1,7 +1,5 @@
 import {
-	AppBar,
 	Backdrop,
-	Box,
 	Divider,
 	FormControl,
 	FormGroup,
@@ -11,20 +9,18 @@ import {
 	Paper,
 	Select,
 	SelectChangeEvent,
-	Skeleton,
-	TextField,
 	Typography,
 } from "@mui/material";
-import { Container, flexbox } from "@mui/system";
-import { ChildProcess } from "child_process";
-import { ChangeEvent, KeyboardEventHandler, useState } from "react";
-import Geolocator from "./geolocator";
+import { Container } from "@mui/system";
+import { ChangeEvent, useState } from "react";
+import { getCoords, getGeocode, getGeolocation } from "./geolocator";
+//import Geolocator from "./geolocator";
 /* interface ChildProps {
     onEnterKey: (e: {    keyCode: number;}, loc: any) => void
     isActive: boolean;
 } */
-type coords = [number, number] | undefined;
-type locType = "Zip Code" | "City" | undefined;
+type Coords = [number, number] | undefined;
+type locType = "Zip Code" | "City" | "Coordinates";
 /* const UserLocationPanel = ({
 	onEnterKey,
 	value,
@@ -34,33 +30,29 @@ type locType = "Zip Code" | "City" | undefined;
 	value: coords;
 	isActive: boolean;
     }) => { */
+
 const UserLocationPanel = ({ submitCoords, isActive }: { submitCoords: any; isActive: boolean }) => {
 	const [isOpen, setIsOpen] = useState(true);
 	const [addressType, setAddressType] = useState<string>("Zip Code");
-	const [zipCode, setZipCode] = useState<string>("");
+	const [zipCode, setZipCode] = useState<string>("75230");
 	const [city, setCity] = useState<string>("");
 	const [isInputError, setIsInputError] = useState<boolean>(false);
+	const [isValid, setIsValid] = useState<boolean>(false);
 
 	const zipCodeRegEx = /(^\d{5}$)|(^\d{9}$)|(^\d{5}-\d{4}$)/;
-	/* const LocationTextField = () => {
-        return addressType === "Zip Code" ?
-            <TextField error></TextField>
-            :
-    } */
 
-	const zipCodeTextField = () => {
-		return <TextField value={zipCode}></TextField>;
-	};
-	const handleEnterKey = (e: { keyCode: number }) => {
+	const handleEnterKey = async (e: { keyCode: number }) => {
 		if (e.keyCode == 13) {
 			if (zipCodeRegEx.test(zipCode)) {
 				setIsInputError(false);
-				submitCoords(zipCode);
+				getGeocode(zipCode).then((value) => submitCoords(value));
+				//setIsValid(true);
 			} else {
 				setIsInputError(true);
 			}
 		}
 	};
+
 	return (
 		<Backdrop
 			//onSubmit={handleEnterKey}
