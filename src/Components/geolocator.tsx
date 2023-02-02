@@ -16,10 +16,7 @@ function errorCallback(result: any) {
 	console.log(result);
 }
 export const getGeolocation = new Promise((resolve, reject) => {
-	const usrCoords: [any, any] = ["", ""];
-
-	usrCoords.pop();
-	usrCoords.pop();
+	const usrCoords: any[] = [];
 
 	function success(pos: GeolocationPosition) {
 		const crd = pos.coords;
@@ -28,7 +25,7 @@ export const getGeolocation = new Promise((resolve, reject) => {
 		console.log(`Latitude : ${crd.latitude}`);
 		console.log(`Longitude: ${crd.longitude}`);
 		console.log(`More or less ${crd.accuracy} meters.`);
-		usrCoords?.push(crd.latitude, crd.longitude);
+		usrCoords.push(crd.latitude, crd.longitude);
 		resolve(usrCoords);
 	}
 
@@ -52,6 +49,7 @@ export const getGeolocation = new Promise((resolve, reject) => {
 	console.log("Usr coords: " + typeof usrCoords);
 	if (usrCoords) return usrCoords;
 });
+
 export const getGeocode = async (loc?: any) => {
 	const usrCoords: [any, any] = ["", ""];
 	let apiCallError = null;
