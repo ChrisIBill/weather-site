@@ -84,7 +84,7 @@ const MakeDailyReport = ({ dayWeatherData }: { dayWeatherData: DailyWeatherType 
 		case "Clear":
 			imgSrc = imgSrc.concat("id800.jpg");
 			break;
-		case "Cloudy":
+		case "Clouds":
 			imgSrc = imgSrc.concat("id80x.jpg");
 			break;
 		default:
