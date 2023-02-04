@@ -3,39 +3,18 @@ import { Divider, Drawer, Paper, Skeleton, Typography } from "@mui/material";
 import { red } from "@mui/material/colors";
 import Grid2 from "@mui/material/Unstable_Grid2";
 import { height } from "@mui/system";
+import moment from "moment";
 import React, { useEffect, useLayoutEffect, useState } from "react";
+import { JsxElement } from "typescript";
+import { DailyWeatherDataType, ReportInfo, WeatherDataType, WeatherReportDataType } from "../lib/interfaces";
 import errImg from "../weather-images/errImg.jpg";
 import { id2xx } from "../weather-images/id2xx.jpg";
 
-interface DailyWeatherType {
-	dt: number;
-	temp: {
-		day: number;
-		min: number;
-		max: number;
-		night: number;
-		eve: number;
-		morn: number;
-	};
-	weather: [
-		{
-			id: number;
-			main: string;
-			description: string;
-		}
-	];
+interface DisplayInfoType {
+	imageSrc: string;
+	effects: string;
 }
-interface HourlyWeatherType {
-	dt: number;
-	temp: number;
-	weather: [
-		{
-			id: number;
-			main: string;
-			description: string;
-		}
-	];
-}
+
 const styles = {
 	DailyReportContainer: {
 		//minHeight: 300,
@@ -58,45 +37,53 @@ const styles = {
 const kelvinToCelsius = (temp: number) => {
 	return temp - 273.15;
 };
-const MakeDailyReport = ({ dayWeatherData }: { dayWeatherData: DailyWeatherType }) => {
+const MakeWeatherReport = ({
+	WeatherData,
+	displayInfo,
+}: {
+	WeatherData: WeatherReportDataType;
+	displayInfo: DisplayInfoType;
+}) => {
 	const [isExpanded, setIsExpanded] = useState(false);
-	const [height, setHeight] = useState(window.innerWidth);
+	let reportLabel, reportInfo;
+	/* const [height, setHeight] = useState(window.innerWidth);
 	console.log(height);
-	const avgDayTemp: number = kelvinToCelsius(dayWeatherData.temp.day);
-	const relTemp = avgDayTemp - 13.9;
-	let reportSize = height > 600 ? 600 : height;
+	let reportSize = height > 600 ? 600 : height; */
 	//const [imgSrc, setImgSrc] = useState("../weather-images/");
-	let imgSrc = "/weather-images/";
-	console.log(imgSrc.concat("id2xx"));
-	switch (dayWeatherData.weather[0].main) {
-		case "Thunderstorm":
-			imgSrc = imgSrc.concat("id2xx.jpg");
-			break;
-		case "Drizzle":
-			imgSrc = imgSrc.concat("id3xx-5xx.jpg");
-			break;
-		case "Rain":
-			imgSrc = imgSrc.concat("id3xx-5xx.jpg");
-			break;
-		case "Snow":
-			imgSrc = imgSrc.concat("id6xx.jpg");
-			break;
-		case "Clear":
-			imgSrc = imgSrc.concat("id800.jpg");
-			break;
-		case "Clouds":
-			imgSrc = imgSrc.concat("id80x.jpg");
-			break;
-		default:
-			imgSrc = imgSrc.concat("errImg.jpg");
-	}
-	const reportEffects = (temp: number) => {
+
+	/* const reportEffects = (temp: number) => {
 		if (temp < 10) {
 			return `inset 0 0 0 1000px rgba(116, 160, 229, ${Math.abs(temp - 10) * 0.05})`;
 			//Apply frosted glass effect
 		} else return "";
+	}; */
+	const HeaderDisplay = () => {
+		const headerData = WeatherData.dataset.shift();
+		if (headerData == undefined) {
+			reportLabel = "Error";
+			reportInfo = "Undefined";
+		} else {
+			reportLabel = headerData.label;
+			reportInfo = headerData.info;
+		}
+		return (
+			<>
+				<Typography variant="h5" align="center">
+					{moment(WeatherData.time, "X").format("dddd")}
+				</Typography>
+				<Typography variant="h5" align="center">
+					{moment(WeatherData.time, "X").format("MMM Do")}
+				</Typography>
+				<Typography>
+					{reportLabel} {reportInfo}
+				</Typography>
+			</>
+		);
 	};
-	useEffect(() => {
+	const ExtendedDisplay = WeatherData.dataset.map((elem, index, data) => {
+		return <li key={index} style={{ listStyle: "none" }}>{`${elem.label} ${elem.info}`}</li>;
+	});
+	/* useEffect(() => {
 		window.addEventListener("resize", (event) => {
 			reportSize = window.innerHeight > 600 ? 600 : 200;
 			console.log(reportSize);
@@ -105,7 +92,7 @@ const MakeDailyReport = ({ dayWeatherData }: { dayWeatherData: DailyWeatherType 
 			reportSize = window.innerHeight > 600 ? 600 : 200;
 			console.log(reportSize);
 		});
-	}, [reportSize]);
+	}, [reportSize]); */
 
 	//const handleScroll = (event) => {};
 	/* useEffect(() => {
@@ -115,9 +102,9 @@ const MakeDailyReport = ({ dayWeatherData }: { dayWeatherData: DailyWeatherType 
 		<Paper
 			className="dailyReport"
 			style={{
-				boxShadow: reportEffects(avgDayTemp),
-				backgroundImage: `url(${process.env.PUBLIC_URL + imgSrc})`,
-				height: reportSize,
+				boxShadow: `inset 0 0 0 1000px rgba(116, 160, 229, .3)`,
+				backgroundImage: `url(${displayInfo.imageSrc})`,
+				height: "500px",
 				backgroundSize: "cover",
 				backgroundPositionY: "50%",
 				//filter: "blur(3px)",
@@ -136,33 +123,105 @@ const MakeDailyReport = ({ dayWeatherData }: { dayWeatherData: DailyWeatherType 
 				},
 			]}
 		>
-			<></>
-			<Typography variant="h5" align="center">
-				{kelvinToCelsius(dayWeatherData.temp.day).toFixed(1)} °C
-			</Typography>
+			<HeaderDisplay />
 			{isExpanded ? (
 				<>
 					<Divider />
-					<Typography variant="h6" align="center">
-						{kelvinToCelsius(dayWeatherData.temp.min).toFixed(1)} °C
-					</Typography>
+					<ul>{ExtendedDisplay}</ul>
 				</>
 			) : undefined}
 		</Paper>
 	);
 };
-const LoadDailyReport = (dayWeatherData?: DailyWeatherType) => {
-	return dayWeatherData ? (
-		<MakeDailyReport dayWeatherData={dayWeatherData} />
+/* const LoadDailyReport = (WeatherData: WeatherReportDataType) => {
+	return WeatherData ? (
+		<MakeWeatherReport WeatherData={WeatherData} displayInfo={displayInfo} />
 	) : (
 		<Skeleton variant="rectangular" height={600} width={400} />
 	);
-};
-export const DailyWeatherReports = ({ dailyWeatherData }: { dailyWeatherData: DailyWeatherType[] }) => {
-	console.log(dailyWeatherData);
-	const reports = Object.keys(dailyWeatherData).map((elem, index) => (
+}; */
+
+export const WeatherReports = ({ WeatherData }: { WeatherData: DailyWeatherDataType[] }) => {
+	console.log("Generating Daily Reports");
+	//console.log(WeatherData);
+	const displayInfoArr: DisplayInfoType[] = [];
+	const reportsData: WeatherReportDataType[] = WeatherData.map((elem, index) => {
+		const date = elem.dt;
+		const weatherCondition = elem.weather && elem.weather[0] ? elem.weather[0].main : undefined;
+		const imageSrc = (str: string | undefined) => {
+			switch (str) {
+				case "Thunderstorm":
+					return "/weather-images/id2xx.jpg";
+				case "Drizzle":
+					return "/weather-images/id3xx-5xx.jpg";
+				case "Rain":
+					return "/weather-images/id3xx-5xx.jpg";
+				case "Snow":
+					return "/weather-images/id6xx.jpg";
+				case "Clear":
+					return "/weather-images/id800.jpg";
+				case "Clouds":
+					return "/weather-images/id80x.jpg";
+				default:
+					return "/weather-images/errImg.jpg";
+			}
+		};
+		if (elem.weather && elem.weather[0]) {
+			displayInfoArr.push({
+				imageSrc: imageSrc(weatherCondition),
+				effects: "inset 0 0 0 1000px rgba(116, 160, 229, .3)",
+			});
+		}
+		/* const reportData: ReportInfo[] = [];
+		for (const [key, value] of Object.entries(elem)) {
+			reportData.push({
+				label: `${key}`,
+				info: `${value}`,
+			});
+		} */
+		const reportData: ReportInfo[] = [
+			{
+				label: "Temperature: ",
+				info: `${elem.temp.day}`,
+			},
+			{
+				label: "Weather: ",
+				info: `${weatherCondition || "Error"}`,
+			},
+			{
+				label: "Chance: ",
+				info: `${elem.pop || "Error"}`,
+			},
+			{
+				label: "Low: ",
+				info: `${elem.temp.min}`,
+			},
+			{
+				label: "High: ",
+				info: `${elem.temp.max}`,
+			},
+			{
+				label: "Feels Like: ",
+				info: `${elem.temp.day}`,
+			},
+			{
+				label: "Wind Speed: ",
+				info: `${elem.windSpeed}`,
+			},
+		];
+		//const date = new Date(elem.dt);
+		console.log("Date: " + date);
+		const curReportData: WeatherReportDataType = {
+			time: date.toString(),
+			dataset: reportData,
+		};
+
+		return curReportData;
+	});
+
+	const reports = Object.keys(reportsData).map((elem, index) => (
 		<Grid2 xs={12} sm={6} md={3} key={elem}>
-			{LoadDailyReport(dailyWeatherData[index])}
+			{MakeWeatherReport({ WeatherData: reportsData[index], displayInfo: displayInfoArr[index] })}
 		</Grid2>
 	));
 	return (
@@ -180,3 +239,8 @@ export const DailyWeatherReports = ({ dailyWeatherData }: { dailyWeatherData: Da
 		<li key={`${index}`}>{elem.temp.day}</li>;
 	}); */
 };
+
+/* export const HourlyWeatherReport = ({ hourlyWeatherData }: { hourlyWeatherData: HourlyWeatherType[] }) => {
+	//const temps: number[] = Object.keys(hourlyWeatherData).map((elem, index) => elem.temp);
+	//<LineChart width={600} height={300} data=
+}; */

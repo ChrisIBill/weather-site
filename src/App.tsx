@@ -6,11 +6,13 @@ import siteTheme from "./lib/siteTheme";
 import UserLocationPanel from "./Components/UserLocationPanel";
 import GoogleMapsAPIKey from "./lib/APIKeys";
 import { getGeolocation } from "./Components/geolocator";
-import { DailyWeatherReports } from "./Components/weatherReports";
-import { WeatherDataType } from "./lib/interfaces";
+import { WeatherReports } from "./Components/weatherReports";
+import { AreaChartDataType, AreaChartHandlerProps, HourlyWeatherDataType, WeatherDataType } from "./lib/interfaces";
 import { Pending } from "@mui/icons-material";
 import { useHorizontalScroll } from "./Components/horzScroll";
-const WeatherAPISrc = `testWeatherData.json`;
+import { WeatherAreaChart } from "./Components/weatherCharts";
+//const WeatherAPIsrc = `https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&exclude=${part}&appid=${API key}&units=${/* Metric or Imperial */}`;
+const WeatherAPISrc = `FarTestWeatherData.json`;
 type Coords = [number, number];
 interface User {
 	id?: string | undefined;
@@ -20,10 +22,10 @@ interface Elem {
 	temp: { day: number };
 }
 
-const UserContext = createContext<User>({ id: undefined, loc: undefined });
 const LoadingScreen = () => {
 	return <Pending />;
 };
+function convertDataForReport(data: HourlyWeatherDataType[]) {}
 function App() {
 	const [isLoaded, setIsLoaded] = useState(false);
 	const [hasLocation, setHasLocation] = useState(false);
@@ -50,7 +52,7 @@ function App() {
 		setHasLocation(true);
 		console.log("Setting Coords: " + loc);
 	};
-	const GetOpenWeatherData = (coords: Coords) => {
+	const GetOpenWeatherData = async (coords: Coords) => {
 		fetch(WeatherAPISrc)
 			.then((res) => res.json())
 			.then(
@@ -81,7 +83,13 @@ function App() {
 			GetOpenWeatherData(userCoords);
 		}
 	}, [userCoords]);
-
+	useEffect(() => {
+		if (userWeather) {
+			if (userWeather.hourly) {
+				//convertDataForReport(userWeather.hourly);
+			}
+		}
+	});
 	useEffect(() => {
 		console.log("Re-rendering");
 		/* let ignore = false;
@@ -95,8 +103,9 @@ function App() {
 				<CssBaseline enableColorScheme />
 				<UserLocationPanel submitCoords={handleManualCoords} isActive={!hasLocation} />
 				<Box style={{ minHeight: "fit-content", overflow: "auto" }} ref={useHorizontalScroll()}>
-					{userWeather ? <DailyWeatherReports dailyWeatherData={userWeather.daily} /> : <LoadingScreen />}
+					{userWeather?.daily ? <WeatherReports WeatherData={userWeather.daily} /> : <LoadingScreen />}
 				</Box>
+				<Box>{userWeather?.hourly ? <WeatherAreaChart weatherData={userWeather} /> : <LoadingScreen />}</Box>
 			</Container>
 		</ThemeProvider>
 	);
