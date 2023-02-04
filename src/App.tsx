@@ -99,13 +99,15 @@ function App() {
 	}, [userWeather]);
 	return (
 		<ThemeProvider theme={siteTheme}>
-			<Container component="main" disableGutters={true} maxWidth={false}>
+			<Container id="App" component="main" disableGutters={true} maxWidth={false} sx={{ flexDirection: "column" }}>
 				<CssBaseline enableColorScheme />
-				<UserLocationPanel submitCoords={handleManualCoords} isActive={!hasLocation} />
-				<Box style={{ minHeight: "fit-content", overflow: "auto" }} ref={useHorizontalScroll()}>
+				{hasLocation ? <></> : <UserLocationPanel submitCoords={handleManualCoords} isActive={!hasLocation} />}
+				<Box style={{ flexGrow: "1" /* , overflow: "auto" */ }} ref={useHorizontalScroll()}>
 					{userWeather?.daily ? <WeatherReports WeatherData={userWeather.daily} /> : <LoadingScreen />}
 				</Box>
-				<Box>{userWeather?.hourly ? <WeatherAreaChart weatherData={userWeather} /> : <LoadingScreen />}</Box>
+				<Box sx={{ flexGrow: "1", height: "50%", width: 1 / 1 }}>
+					{userWeather?.hourly ? <WeatherAreaChart weatherData={userWeather} /> : <LoadingScreen />}
+				</Box>
 			</Container>
 		</ThemeProvider>
 	);

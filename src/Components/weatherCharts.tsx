@@ -77,8 +77,9 @@ function areaChartDatasetGenerator(weatherDataset: WeatherDataType) {
 		};
 		const tempsDataset: (number | undefined)[] = [];
 		const feelsDataset: (number | undefined)[] = [];
-		hoursData.forEach((elem) => {
-			AreaChartProps.labels.push(moment(elem.dt, "X").format("LT"));
+		hoursData.forEach((elem, i) => {
+			const xLabel = i % 3 ? moment(elem.dt, "X").format("LT") : "";
+			AreaChartProps.labels.push(xLabel);
 			tempsDataset.push(elem.temp);
 			feelsDataset.push(elem.feels_like);
 		});

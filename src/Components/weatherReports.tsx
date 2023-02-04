@@ -53,7 +53,7 @@ const MakeWeatherReport = ({
 
 	/* const reportEffects = (temp: number) => {
 		if (temp < 10) {
-			return `inset 0 0 0 1000px rgba(116, 160, 229, ${Math.abs(temp - 10) * 0.05})`;
+			return `inset 0 0 0 1000px rgba(116, 176, 189, 0.3)`;
 			//Apply frosted glass effect
 		} else return "";
 	}; */
@@ -68,20 +68,24 @@ const MakeWeatherReport = ({
 		}
 		return (
 			<>
-				<Typography variant="h5" align="center">
+				<Typography variant="h3" align="center" color="#112A46">
 					{moment(WeatherData.time, "X").format("dddd")}
 				</Typography>
-				<Typography variant="h5" align="center">
+				<Typography variant="h4" align="center" color="#112A46">
 					{moment(WeatherData.time, "X").format("MMM Do")}
 				</Typography>
-				<Typography>
+				<Typography variant="h5" align="center" color="#112A46">
 					{reportLabel} {reportInfo}
 				</Typography>
 			</>
 		);
 	};
 	const ExtendedDisplay = WeatherData.dataset.map((elem, index, data) => {
-		return <li key={index} style={{ listStyle: "none" }}>{`${elem.label} ${elem.info}`}</li>;
+		return (
+			<Typography key={index} variant="h5" align="center" color="#112A46" style={{ listStyle: "none" }}>
+				{`${elem.label} ${elem.info}`}
+			</Typography>
+		);
 	});
 	/* useEffect(() => {
 		window.addEventListener("resize", (event) => {
@@ -102,9 +106,9 @@ const MakeWeatherReport = ({
 		<Paper
 			className="dailyReport"
 			style={{
-				boxShadow: `inset 0 0 0 1000px rgba(116, 160, 229, .3)`,
+				boxShadow: `inset 0 0 0 1000px rgba(116, 176, 189, 0.4)`,
 				backgroundImage: `url(${displayInfo.imageSrc})`,
-				height: "500px",
+				height: "600px",
 				backgroundSize: "cover",
 				backgroundPositionY: "50%",
 				//filter: "blur(3px)",
@@ -124,12 +128,8 @@ const MakeWeatherReport = ({
 			]}
 		>
 			<HeaderDisplay />
-			{isExpanded ? (
-				<>
-					<Divider />
-					<ul>{ExtendedDisplay}</ul>
-				</>
-			) : undefined}
+			<Divider />
+			{isExpanded ? <ul style={{ padding: "0", listStyle: "none" }}>{ExtendedDisplay}</ul> : undefined}
 		</Paper>
 	);
 };
@@ -220,17 +220,17 @@ export const WeatherReports = ({ WeatherData }: { WeatherData: DailyWeatherDataT
 	});
 
 	const reports = Object.keys(reportsData).map((elem, index) => (
-		<Grid2 xs={12} sm={6} md={3} key={elem}>
+		<Grid2 /* xs={12} sm={6} md={3} */ sm={2} key={elem}>
 			{MakeWeatherReport({ WeatherData: reportsData[index], displayInfo: displayInfoArr[index] })}
 		</Grid2>
 	));
 	return (
 		<Grid2
-			sx={{ flexGrow: 1, overflow: "auto", width: "160vw" }}
+			sx={{ flexGrow: 1, overflow: "auto" }}
 			container
 			wrap={"nowrap"}
-			spacing={2}
-			disableEqualOverflow
+			spacing={4}
+			//disableEqualOverflow
 		>
 			{reports}
 		</Grid2>
