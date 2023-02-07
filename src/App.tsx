@@ -6,8 +6,13 @@ import siteTheme from "./lib/siteTheme";
 import UserLocationPanel from "./Components/UserLocationPanel";
 import GoogleMapsAPIKey from "./lib/APIKeys";
 import { getGeolocation } from "./Components/geolocator";
-import { WeatherReports } from "./Components/weatherReports";
-import { AreaChartDataType, AreaChartHandlerProps, HourlyWeatherDataType, WeatherDataType } from "./lib/interfaces";
+import { DailyWeatherReports } from "./Components/weatherReports";
+import {
+    AreaChartDataType,
+    AreaChartHandlerProps,
+    HourlyWeatherDataType,
+    WeatherDataType,
+} from "./lib/interfaces";
 import { Pending } from "@mui/icons-material";
 import { useHorizontalScroll } from "./Components/horzScroll";
 import { WeatherAreaChart } from "./Components/weatherCharts";
@@ -15,102 +20,117 @@ import { WeatherAreaChart } from "./Components/weatherCharts";
 const WeatherAPISrc = `FarTestWeatherData.json`;
 type Coords = [number, number];
 interface User {
-	id?: string | undefined;
-	loc?: Coords;
+    id?: string | undefined;
+    loc?: Coords;
 }
 interface Elem {
-	temp: { day: number };
+    temp: { day: number };
 }
 
 const LoadingScreen = () => {
-	return <Pending />;
+    return <Pending />;
 };
 function convertDataForReport(data: HourlyWeatherDataType[]) {}
 function App() {
-	const [isLoaded, setIsLoaded] = useState(false);
-	const [hasLocation, setHasLocation] = useState(false);
-	const [userCoords, setUserCoords] = useState<Coords>();
-	const [userWeather, setUserWeather] = useState<WeatherDataType>();
+    const [isLoaded, setIsLoaded] = useState(false);
+    const [hasLocation, setHasLocation] = useState(false);
+    const [userCoords, setUserCoords] = useState<Coords>();
+    const [userWeather, setUserWeather] = useState<WeatherDataType>();
 
-	//Async User Location Data Request
-	const resolveCallback = (result: any) => {
-		setUserCoords(result);
-		setHasLocation(true);
-	};
-	const failCallback = (error: any) => {
-		console.log("getGeolocation Failed");
-		console.log(error.message);
-	};
-	function asyncUserLocation() {
-		console.log("called async");
-		getGeolocation.then(resolveCallback, failCallback);
-	}
-	asyncUserLocation();
+    //Async User Location Data Request
+    const resolveCallback = (result: any) => {
+        setUserCoords(result);
+        setHasLocation(true);
+    };
+    const failCallback = (error: any) => {
+        console.log("getGeolocation Failed");
+        console.log(error.message);
+    };
+    function asyncUserLocation() {
+        console.log("called async");
+        getGeolocation.then(resolveCallback, failCallback);
+    }
+    asyncUserLocation();
 
-	const handleManualCoords = (loc: any) => {
-		setUserCoords(loc);
-		setHasLocation(true);
-		console.log("Setting Coords: " + loc);
-	};
-	const GetOpenWeatherData = async (coords: Coords) => {
-		fetch(WeatherAPISrc)
-			.then((res) => res.json())
-			.then(
-				(result) => {
-					console.log(result);
-					setUserWeather(result);
-				},
-				(error) => {
-					console.log(error.message);
-					console.log("Error with fetching weather data");
-				}
-			);
-	};
+    const handleManualCoords = (loc: any) => {
+        setUserCoords(loc);
+        setHasLocation(true);
+        console.log("Setting Coords: " + loc);
+    };
+    const GetOpenWeatherData = async (coords: Coords) => {
+        fetch(WeatherAPISrc)
+            .then((res) => res.json())
+            .then(
+                (result) => {
+                    console.log(result);
+                    setUserWeather(result);
+                },
+                (error) => {
+                    console.log(error.message);
+                    console.log("Error with fetching weather data");
+                }
+            );
+    };
 
-	useEffect(() => {
-		let ignore = false;
-		console.log("Mounted");
+    useEffect(() => {
+        let ignore = false;
+        console.log("Mounted");
 
-		return () => {
-			ignore = true;
-			console.log("Unmounting");
-		};
-	}, []);
+        return () => {
+            ignore = true;
+            console.log("Unmounting");
+        };
+    }, []);
 
-	useEffect(() => {
-		if (userCoords) {
-			console.log("Getting weather data for coordinates: " + userCoords);
-			GetOpenWeatherData(userCoords);
-		}
-	}, [userCoords]);
-	useEffect(() => {
-		if (userWeather) {
-			if (userWeather.hourly) {
-				//convertDataForReport(userWeather.hourly);
-			}
-		}
-	});
-	useEffect(() => {
-		console.log("Re-rendering");
-		/* let ignore = false;
+    useEffect(() => {
+        if (userCoords) {
+            console.log("Getting weather data for coordinates: " + userCoords);
+            GetOpenWeatherData(userCoords);
+        }
+    }, [userCoords]);
+    useEffect(() => {
+        if (userWeather) {
+            if (userWeather.hourly) {
+                //convertDataForReport(userWeather.hourly);
+            }
+        }
+    });
+    useEffect(() => {
+        console.log("Re-rendering");
+        /* let ignore = false;
 		if (!ignore) {
 			userWeather ? DailyWeatherReports(userWeather.daily) : console.log("Error: unexpected weather data");
 		} */
-	}, [userWeather]);
-	return (
-		<ThemeProvider theme={siteTheme}>
-			<Container id="App" component="main" disableGutters={true} maxWidth={false} sx={{ flexDirection: "column" }}>
-				<CssBaseline enableColorScheme />
-				{hasLocation ? <></> : <UserLocationPanel submitCoords={handleManualCoords} isActive={!hasLocation} />}
-				<Box style={{ flexGrow: "1" /* , overflow: "auto" */ }} ref={useHorizontalScroll()}>
-					{userWeather?.daily ? <WeatherReports WeatherData={userWeather.daily} /> : <LoadingScreen />}
-				</Box>
-				<Box sx={{ flexGrow: "1", height: "50%", width: 1 / 1 }}>
+    }, [userWeather]);
+    return (
+        <ThemeProvider theme={siteTheme}>
+            <Container
+                id="App"
+                component="main"
+                disableGutters={true}
+                maxWidth={false}
+                sx={{ flexDirection: "column" }}
+            >
+                <CssBaseline enableColorScheme />
+                {hasLocation ? (
+                    <></>
+                ) : (
+                    <UserLocationPanel
+                        submitCoords={handleManualCoords}
+                        isActive={!hasLocation}
+                    />
+                )}
+                {userWeather?.daily ? (
+                    <DailyWeatherReports WeatherData={userWeather.daily} />
+                ) : (
+                    <LoadingScreen />
+                )}
+                {/* <Box sx={{ flexGrow: "1", height: "50%", width: 1 / 1 }}>
 					{userWeather?.hourly ? <WeatherAreaChart weatherData={userWeather} /> : <LoadingScreen />}
-				</Box>
-			</Container>
-		</ThemeProvider>
-	);
+				</Box> */}
+            </Container>
+        </ThemeProvider>
+    );
 }
 
 export default App;
