@@ -4,7 +4,7 @@ import { ThemeProvider } from "@emotion/react";
 import { Box, Container, CssBaseline } from "@mui/material";
 import siteTheme from "./lib/siteTheme";
 import UserLocationPanel from "./Components/UserLocationPanel";
-import GoogleMapsAPIKey from "./lib/APIKeys";
+import { GoogleMapsAPIKey } from "./lib/APIKeys";
 import { getGeolocation } from "./Components/geolocator";
 import { DailyWeatherReports } from "./Components/weatherReports";
 import {

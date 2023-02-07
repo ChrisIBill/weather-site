@@ -6,9 +6,10 @@ import {
     Drawer,
     Paper,
     Skeleton,
+    styled,
     Typography,
 } from "@mui/material";
-import { red } from "@mui/material/colors";
+import { blue, green, red } from "@mui/material/colors";
 import Grid2 from "@mui/material/Unstable_Grid2";
 import { height } from "@mui/system";
 import moment from "moment";
@@ -40,12 +41,41 @@ const styles = {
 const kelvinToCelsius = (temp: number) => {
     return temp - 273.15;
 };
-
+const Root = styled("div")(({ theme }) => ({
+    padding: theme.spacing(1),
+    [theme.breakpoints.down("md")]: {
+        backgroundColor: red[500],
+    },
+    [theme.breakpoints.up("md")]: {
+        backgroundColor: blue[500],
+    },
+    [theme.breakpoints.up("lg")]: {
+        backgroundColor: green[500],
+    },
+}));
 const WeatherDataPanel = () => {
-    return <Box style={{ height: "100px", width: "100px" }}></Box>;
+    return (
+        <Box
+            style={{
+                height: "100px",
+                width: "100px",
+                color: "white",
+                backgroundColor: "white",
+            }}
+        ></Box>
+    );
 };
 const WeatherChartsPanel = () => {
-    return <Box style={{ height: "100px", width: "100px" }}></Box>;
+    return (
+        <Box
+            style={{
+                height: "100px",
+                width: "100px",
+                color: "white",
+                backgroundColor: "white",
+            }}
+        ></Box>
+    );
 };
 const ReportPanels = () => {
     return (
