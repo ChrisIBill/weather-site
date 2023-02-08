@@ -4,7 +4,9 @@ import {
     Container,
     Divider,
     Drawer,
+    List,
     Pagination,
+    PaginationItem,
     Paper,
     Skeleton,
     styled,
@@ -27,6 +29,7 @@ import {
 } from "../lib/interfaces";
 import errImg from "../weather-images/errImg.jpg";
 import { id2xx } from "../weather-images/id2xx.jpg";
+import usePagination from "@mui/material/usePagination/usePagination";
 
 interface DisplayInfoType {
     imageSrc: string;
@@ -287,7 +290,55 @@ const MakeWeatherReport = ({
         </Box>
     );
 };
+const ReportsPagination = ({
+    elems,
+    handleChange,
+}: {
+    elems: JSX.Element[];
+    handleChange: any;
+}) => {
+    const [pageIndex, setPageIndex] = useState(0);
+    const { items } = usePagination({
+        count: 8,
+    });
+    /* const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
+        setPageIndex(value);
+    }; */
+    return (
+        <nav>
+            <List>
+                {items.map(({ page, type, selected, ...item }, index) => {
+                    let children = null;
 
+                    if (type === "start-ellipsis" || type === "end-ellipsis") {
+                        children = "…";
+                    } else if (type === "page") {
+                        children = (
+                            <button
+                                type="button"
+                                style={{
+                                    fontWeight: selected ? "bold" : undefined,
+                                }}
+                                onChange={handleChange(index)}
+                                {...items}
+                            >
+                                {elems[index]}
+                            </button>
+                        );
+                    } else {
+                        children = (
+                            <button type="button" {...item}>
+                                {type}
+                            </button>
+                        );
+                    }
+
+                    return <li key={index}>{children}</li>;
+                })}
+            </List>
+        </nav>
+    );
+};
 export const DailyWeatherReports = ({
     WeatherData,
 }: {
@@ -296,8 +347,9 @@ export const DailyWeatherReports = ({
     console.log("Generating Daily Reports");
     //console.log(WeatherData);
     const displayInfoArr: DisplayInfoType[] = [];
-    const [reportIndex, setReportIndex] = useState(0);
-    const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
+    const [reportIndex, setReportIndex] = useState(1);
+    const handleChange = (value: number) => {
+        console.log(reportIndex);
         setReportIndex(value);
     };
     const reportsData: WeatherReportDataType[] = WeatherData.map(
@@ -419,7 +471,7 @@ export const DailyWeatherReports = ({
             style={{ flexGrow: 1, overflow: "auto" }}
         >
             {reports[reportIndex]}
-            <Pagination count={8} page={reportIndex} onChange={handleChange} />
+            <ReportsPagination elems={reports} handleChange={handleChange} />
         </Container>
     );
 };
