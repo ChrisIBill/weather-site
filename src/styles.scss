@@ -1,0 +1,17 @@
+.cssImageMaskBox {
+    display: grid;
+}
+
+.cssMask,
+.cssImage {
+    grid-column: 1;
+    grid-row: 1;
+}
+
+.cssMask {
+    z-index: 2;
+}
+
+.cssImage {
+    z-index: 1;
+}

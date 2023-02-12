@@ -107,39 +107,40 @@ export interface AreaChartHandlerProps {
     labelDatasets: Array<string>;
     title?: string;
 }
-
 export interface DayTemperatures {
-    high: number | undefined;
-    low: number | undefined;
-    morn: (number | undefined)[];
-    day: (number | undefined)[];
-    eve: (number | undefined)[];
-    night: (number | undefined)[];
+    high: string;
+    low: string;
+    avg: string;
+    morn: string[];
+    day: string[];
+    eve: string[];
+    night: string[];
 }
 export interface DayMiscWeather {
-    pressure: number | undefined;
-    humidity: number | undefined;
-    dew_point: number | undefined;
-    wind_speed: number | undefined;
-    wind_deg: number | undefined;
-    wind_gust: number | undefined;
-    clouds: number | undefined;
-    pop: number | undefined;
-    rain?: number | undefined;
-    snow?: number | undefined;
-    uvi: number | undefined;
+    pressure: string;
+    humidity: string;
+    dew_point: string;
+    wind_speed: string;
+    wind_deg: string;
+    wind_gust: string;
+    clouds: string;
+    pop: string;
+    rain?: string;
+    snow?: string;
+    uvi: string;
 }
 export interface DayWeatherInfo {
-    id: number | undefined;
+    id: string;
     main: string | undefined;
-    description: string | undefined;
+    description: string;
+    img_src: string;
 }
 export interface DayWeatherData {
     dt: number;
     data: {
-        temps: DayTemperatures | undefined;
-        misc?: DayMiscWeather | undefined;
-        weather?: DayWeatherInfo | undefined;
+        temps: DayTemperatures;
+        misc: DayMiscWeather;
+        weather: DayWeatherInfo;
     };
 }
 

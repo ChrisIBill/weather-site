@@ -10,12 +10,14 @@ import { DailyWeatherReports } from "./Components/weatherReports";
 import {
     AreaChartDataType,
     AreaChartHandlerProps,
+    DayWeatherData,
     HourlyWeatherDataType,
     WeatherDataType,
 } from "./lib/interfaces";
 import { Pending } from "@mui/icons-material";
 import { useHorizontalScroll } from "./Components/horzScroll";
 import { WeatherAreaChart } from "./Components/weatherCharts";
+import { sanitizeDailyWeatherData } from "./Components/dataHandler";
 //const WeatherAPIsrc = `https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&exclude=${part}&appid=${API key}&units=${/* Metric or Imperial */}`;
 const WeatherAPISrc = `FarTestWeatherData.json`;
 type Coords = [number, number];
@@ -36,6 +38,8 @@ function App() {
     const [hasLocation, setHasLocation] = useState(false);
     const [userCoords, setUserCoords] = useState<Coords>();
     const [userWeather, setUserWeather] = useState<WeatherDataType>();
+    const [weeklyUserWeather, setWeeklyUserWeather] =
+        useState<DayWeatherData[]>();
 
     //Async User Location Data Request
     const resolveCallback = (result: any) => {
@@ -71,8 +75,7 @@ function App() {
                 }
             );
     };
-
-    useEffect(() => {
+    /*     useEffect(() => {
         let ignore = false;
         console.log("Mounted");
 
@@ -81,20 +84,21 @@ function App() {
             console.log("Unmounting");
         };
     }, []);
-
+ */
     useEffect(() => {
         if (userCoords) {
             console.log("Getting weather data for coordinates: " + userCoords);
             GetOpenWeatherData(userCoords);
         }
     }, [userCoords]);
-    useEffect(() => {
-        if (userWeather) {
-            if (userWeather.hourly) {
-                //convertDataForReport(userWeather.hourly);
-            }
+   /*  useEffect(() => {
+        if (userWeather?.hourly) {
+            //convertDataForReport(userWeather.hourly);
         }
-    });
+        if (userWeather?.daily) {
+            setWeeklyUserWeather(sanitizeDailyWeatherData(userWeather.daily));
+        }
+    }, [userWeather]); */
     useEffect(() => {
         console.log("Re-rendering");
         /* let ignore = false;

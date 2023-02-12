@@ -22,7 +22,6 @@ import { JsxElement } from "typescript";
 import {
     DailyWeatherDataType,
     DayTemperatures,
-    DayWeatherData,
     ReportInfo,
     WeatherDataType,
     WeatherReportDataType,
@@ -30,6 +29,9 @@ import {
 import errImg from "../weather-images/errImg.jpg";
 import { id2xx } from "../weather-images/id2xx.jpg";
 import usePagination from "@mui/material/usePagination/usePagination";
+import { sanitizeDailyWeatherData } from "./dataHandler";
+import { ReportsPagination } from "./ReportsPagination";
+import { ReportPanels } from "./ReportPanels";
 
 interface DisplayInfoType {
     imageSrc: string;
@@ -44,13 +46,6 @@ const styles = {
         backgroundPositionY: "50%",
     },
 };
-
-function temperatureString(x: number | undefined) {
-    return Math.trunc(x || Infinity) + "°";
-}
-const kelvinToCelsius = (temp: number) => {
-    return temp - 273.15;
-};
 const Root = styled("div")(({ theme }) => ({
     padding: theme.spacing(1),
     [theme.breakpoints.down("md")]: {
@@ -64,126 +59,6 @@ const Root = styled("div")(({ theme }) => ({
     },
 }));
 
-const WeatherDataPanel = (weatherData: DailyWeatherDataType) => {
-    const panelTypes = ["Temperatures", "Misc"] as const;
-    const daySegments = ["morn", "day", "eve", "night"];
-    const [panelType, setPanelType] = useState("Temperatures");
-    const temp = weatherData.temp;
-    const feels = weatherData.feels_like;
-    const temps = {
-        high: temperatureString(temp.max),
-        low: temperatureString(temp.min),
-        morn: [temperatureString(temp.morn), temperatureString(feels.morn)],
-        day: [temperatureString(temp.day), temperatureString(feels.day)],
-        eve: [temperatureString(temp.eve), temperatureString(feels.eve)],
-        night: [temperatureString(temp.night), temperatureString(feels.night)],
-    };
-    const handleClick = () => {
-        console.log("click");
-        setPanelType(panelType === "Temperatures" ? "Misc" : "Temperatures");
-    };
-    const PanelContent = () => {
-        if (panelType === "Temperatures") {
-            return (
-                <Container>
-                    <Typography className="reportTypography" variant="h5">
-                        High: {temps.high}
-                    </Typography>
-                    <Typography className="reportTypography" variant="h5">
-                        Low: {temps.low}
-                    </Typography>
-                    <Grid2 style={{ display: "flex" }}>
-                        <Grid2 xs={4}>
-                            <Typography className="reportTypography">
-                                Actual
-                                <br />
-                                {temps.morn[0]} <br />
-                                {temps.day[0]} <br />
-                                {temps.eve[0]} <br />
-                                {temps.night[0]} <br />
-                            </Typography>
-                        </Grid2>
-                        <Grid2 xs={4}>
-                            <Typography className="reportTypography">
-                                <br />
-                                Morning
-                                <br />
-                                Day
-                                <br />
-                                Evening
-                                <br />
-                                Night
-                                <br />
-                            </Typography>
-                        </Grid2>
-                        <Grid2 xs={4}>
-                            <Typography className="reportTypography">
-                                Feels Like
-                                <br />
-                                {temps.morn[1]} <br />
-                                {temps.day[1]} <br />
-                                {temps.eve[1]} <br />
-                                {temps.night[1]} <br />
-                            </Typography>
-                        </Grid2>
-                    </Grid2>
-                </Container>
-            );
-        } else if (panelType === "Misc") {
-            return (
-                <Container>
-                    <Typography className="reportTypography"></Typography>
-                </Container>
-            );
-        } else return <>ERROR</>;
-    };
-
-    return (
-        <Box
-            sx={{
-                width: "100%",
-                borderRadius: 10,
-                backgroundColor: "#00000080",
-                "&:hover": {
-                    backgroundColor: "#00000060",
-                },
-            }}
-            onClick={handleClick}
-        >
-            <Typography className="reportTypography" variant="h4">
-                {panelType}
-            </Typography>
-            <PanelContent />
-        </Box>
-    );
-};
-const WeatherChartsPanel = () => {
-    return (
-        <Box
-            sx={{
-                height: "100%",
-                width: "100%",
-                borderRadius: 10,
-                backgroundColor: "#00000080",
-                "&:hover": {
-                    backgroundColor: "#00000060",
-                },
-            }}
-        ></Box>
-    );
-};
-const ReportPanels = (weatherData: DailyWeatherDataType) => {
-    return (
-        <Grid2 container spacing={2}>
-            <Grid2 md={12} lg={6}>
-                {WeatherDataPanel(weatherData)}
-            </Grid2>
-            <Grid2 md={12} lg={6}>
-                <WeatherChartsPanel />
-            </Grid2>
-        </Grid2>
-    );
-};
 const MakeWeatherReport = ({
     curWeatherData,
     dayWeatherData,
@@ -230,19 +105,7 @@ const MakeWeatherReport = ({
             </>
         );
     };
-    const ExtendedDisplay = curWeatherData.dataset.map((elem, index, data) => {
-        return (
-            <Typography
-                key={index}
-                className="reportTypography"
-                variant="h5"
-                align="center"
-                style={{ listStyle: "none" }}
-            >
-                {`${elem.label} ${elem.info}`}
-            </Typography>
-        );
-    });
+
     return (
         <Box
             className="dailyReportBox"
@@ -290,55 +153,7 @@ const MakeWeatherReport = ({
         </Box>
     );
 };
-const ReportsPagination = ({
-    elems,
-    handleChange,
-}: {
-    elems: JSX.Element[];
-    handleChange: any;
-}) => {
-    const [pageIndex, setPageIndex] = useState(0);
-    const { items } = usePagination({
-        count: 8,
-    });
-    /* const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
-        setPageIndex(value);
-    }; */
-    return (
-        <nav>
-            <List>
-                {items.map(({ page, type, selected, ...item }, index) => {
-                    let children = null;
 
-                    if (type === "start-ellipsis" || type === "end-ellipsis") {
-                        children = "…";
-                    } else if (type === "page") {
-                        children = (
-                            <button
-                                type="button"
-                                style={{
-                                    fontWeight: selected ? "bold" : undefined,
-                                }}
-                                onChange={handleChange(index)}
-                                {...items}
-                            >
-                                {elems[index]}
-                            </button>
-                        );
-                    } else {
-                        children = (
-                            <button type="button" {...item}>
-                                {type}
-                            </button>
-                        );
-                    }
-
-                    return <li key={index}>{children}</li>;
-                })}
-            </List>
-        </nav>
-    );
-};
 export const DailyWeatherReports = ({
     WeatherData,
 }: {
@@ -349,9 +164,29 @@ export const DailyWeatherReports = ({
     const displayInfoArr: DisplayInfoType[] = [];
     const [reportIndex, setReportIndex] = useState(1);
     const handleChange = (value: number) => {
-        console.log(reportIndex);
         setReportIndex(value);
+        console.log(value);
     };
+    const weekData = sanitizeDailyWeatherData(WeatherData);
+    const getImageSrc = (str: string | undefined) => {
+        switch (str) {
+            case "Thunderstorm":
+                return "/weather-images/id2xx.jpg";
+            case "Drizzle":
+                return "/weather-images/id3xx-5xx.jpg";
+            case "Rweekain":
+                return "/weather-images/id3xx-5xx.jpg";
+            case "Snow":
+                return "/weather-images/id6xx.jpg";
+            case "Clear":
+                return "/weather-images/id800.jpg";
+            case "Clouds":
+                return "/weather-images/id80x.jpg";
+            default:
+                return "/weather-images/errImg.jpg";
+        }
+    };
+
     const reportsData: WeatherReportDataType[] = WeatherData.map(
         (elem, index) => {
             const date = elem.dt;
@@ -359,39 +194,14 @@ export const DailyWeatherReports = ({
                 elem.weather && elem.weather[0]
                     ? elem.weather[0].main
                     : undefined;
-            const imageSrc = (str: string | undefined) => {
-                switch (str) {
-                    case "Thunderstorm":
-                        return "/weather-images/id2xx.jpg";
-                    case "Drizzle":
-                        return "/weather-images/id3xx-5xx.jpg";
-                    case "Rain":
-                        return "/weather-images/id3xx-5xx.jpg";
-                    case "Snow":
-                        return "/weather-images/id6xx.jpg";
-                    case "Clear":
-                        return "/weather-images/id800.jpg";
-                    case "Clouds":
-                        return "/weather-images/id80x.jpg";
-                    default:
-                        return "/weather-images/errImg.jpg";
-                }
-            };
             if (elem.weather && elem.weather[0]) {
                 displayInfoArr.push({
-                    imageSrc: imageSrc(weatherCondition),
+                    imageSrc: getImageSrc(weatherCondition),
                     effects: "inset 0 0 0 1000px rgba(116, 160, 229, .3)",
                     backgroundMask:
                         "linear-gradient(180deg, #000000 0%, rgba(0, 0, 0, 0.3) 25.79%)",
                 });
             }
-            /* const reportData: ReportInfo[] = [];
-		for (const [key, value] of Object.entries(elem)) {
-			reportData.push({
-				label: `${key}`,
-				info: `${value}`,
-			});
-		} */
             const reportData: ReportInfo[] = [
                 {
                     label: "Temperature: ",
@@ -411,11 +221,7 @@ export const DailyWeatherReports = ({
                 },
                 {
                     label: "High: ",
-                    info: `${elem.temp.max}`,
-                },
-                {
-                    label: "Feels Like: ",
-                    info: `${elem.temp.day}`,
+                    info: `${elem.temp.min}`,
                 },
                 {
                     label: "Wind Speed: ",
@@ -432,27 +238,11 @@ export const DailyWeatherReports = ({
             return curReportData;
         }
     );
-
-    /*     const reports = Object.keys(reportsData).map((elem, index) => (
-        <Box
-            style={{
-                display: "flex",
-                flexGrow: "1",
-            }}
-            key={elem}
-        >
-            {MakeWeatherReport({
-                WeatherData: reportsData[index],
-                displayInfo: displayInfoArr[index],
-            })}
-        </Box>
-    )); */
     const reports = Object.keys(reportsData).map((elem, index) => (
         <Box
             /* xs={12} sm={6} md={3} */ style={{
                 display: "flex",
-                flexGrow: "1",
-                height: "90%",
+                flexGrow: "4",
             }}
             key={elem}
         >
@@ -463,15 +253,24 @@ export const DailyWeatherReports = ({
             })}
         </Box>
     ));
+
     return (
         <Container
             id="dailyReportsContainer"
             disableGutters={true}
             maxWidth={false}
-            style={{ flexGrow: 1, overflow: "auto" }}
+            style={{
+                display: "flex",
+                flexGrow: 1,
+                flexDirection: "column",
+                overflow: "auto",
+            }}
         >
             {reports[reportIndex]}
-            <ReportsPagination elems={reports} handleChange={handleChange} />
+            <ReportsPagination
+                weekData={weekData}
+                handleChange={handleChange}
+            />
         </Container>
     );
 };

@@ -1,6 +1,4 @@
-Typography {
-    color: black
-}
+
 .reportTypography {
     color: #FFFFFFB2
 }
@@ -19,4 +17,8 @@ Typography {
 
 .dailyReportImage {
     z-index: 1;
+}
+
+ul > li {
+    display: inline-block;
 }
