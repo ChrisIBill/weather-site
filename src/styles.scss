@@ -1,17 +1,35 @@
-.cssImageMaskBox {
+.cssMaskingGrid {
     display: grid;
 }
 
-.cssMask,
-.cssImage {
+.cssGridMask,
+.cssGridImage {
     grid-column: 1;
     grid-row: 1;
 }
 
-.cssMask {
+.cssGridMask {
     z-index: 2;
 }
 
-.cssImage {
+.cssGridImage {
     z-index: 1;
+}
+#DailyReportsContainer {
+    display: grid;
+    
+}
+#CurrentReportBox, #PaginationNavBar {
+    grid-column: 1;
+    grid-row: 1;
+}
+#CurrentReportBox {
+    height: 100%;
+    z-index: 1;
+}
+#PaginationNavBar {
+    z-index: 2;
+    position:relative;
+    bottom: -75%;
+    background-color: #FFFFFF2B;
 }

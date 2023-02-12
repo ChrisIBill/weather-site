@@ -1,3 +1,14 @@
+import "./weatherReports.scss";
+import "../styles.scss";
+
+import {
+    DailyWeatherDataType,
+    DayTemperatures,
+    ReportInfo,
+    WeatherDataType,
+    WeatherReportDataType,
+} from "../lib/interfaces";
+
 import { AspectRatio } from "@mui/icons-material";
 import {
     Box,
@@ -16,19 +27,8 @@ import { blue, green, red } from "@mui/material/colors";
 import Grid2 from "@mui/material/Unstable_Grid2";
 import { height } from "@mui/system";
 import moment from "moment";
-import "./weatherReports.scss";
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import { JsxElement } from "typescript";
-import {
-    DailyWeatherDataType,
-    DayTemperatures,
-    ReportInfo,
-    WeatherDataType,
-    WeatherReportDataType,
-} from "../lib/interfaces";
-import errImg from "../weather-images/errImg.jpg";
-import { id2xx } from "../weather-images/id2xx.jpg";
-import usePagination from "@mui/material/usePagination/usePagination";
 import { sanitizeDailyWeatherData } from "./dataHandler";
 import { ReportsPagination } from "./ReportsPagination";
 import { ReportPanels } from "./ReportPanels";
@@ -240,9 +240,10 @@ export const DailyWeatherReports = ({
     );
     const reports = Object.keys(reportsData).map((elem, index) => (
         <Box
+            id="CurrentReportBox"
+            className="cssGridImage"
             /* xs={12} sm={6} md={3} */ style={{
                 display: "flex",
-                flexGrow: "4",
             }}
             key={elem}
         >
@@ -256,11 +257,10 @@ export const DailyWeatherReports = ({
 
     return (
         <Container
-            id="dailyReportsContainer"
+            id="DailyReportsContainer"
             disableGutters={true}
             maxWidth={false}
             style={{
-                display: "flex",
                 flexGrow: 1,
                 flexDirection: "column",
                 overflow: "auto",

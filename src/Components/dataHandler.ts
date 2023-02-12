@@ -40,12 +40,13 @@ const getImageSrc = (str: string | undefined) => {
             return "/weather-images/errImg.jpg";
     }
 };
+function convertTimeToDay(dt: number) {}
 export function sanitizeDailyWeatherData(
     weatherData: DailyWeatherDataType[]
 ): DayWeatherData[] {
     const weekData: DayWeatherData[] = [];
     const weekObj = {};
-    weatherData.forEach((elem) => {
+    weatherData.forEach((elem, index) => {
         const temp = elem.temp;
         const temps = [temp.morn, temp.day, temp.eve, temp.night];
         const feels = elem.feels_like;

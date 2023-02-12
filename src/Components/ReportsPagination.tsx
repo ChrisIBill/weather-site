@@ -1,4 +1,5 @@
 import "../styles.scss";
+import "./ReportsPagination.scss";
 import { Box, Container, List, Paper, Typography } from "@mui/material";
 import usePagination from "@mui/material/usePagination/usePagination";
 import moment from "moment";
@@ -7,9 +8,11 @@ import { DayWeatherData } from "../lib/interfaces";
 
 const ReportPaginationButton = ({
     dayData,
+    index,
     onClick,
 }: {
     dayData: DayWeatherData;
+    index: number;
     onClick: any;
 }) => {
     const dayOfWeek = moment(dayData.dt, "X").format("dddd");
@@ -18,19 +21,31 @@ const ReportPaginationButton = ({
     const imgSrc = dayData.data.weather.img_src;
     console.log("Img Src = " + imgSrc);
     return (
-        <Container className="cssImageMaskBox" style={{}}>
-            <Box className="cssMask">
+        <Box
+            className="cssMaskingGrid PaginationPageContainer"
+            style={{ borderRadius: "12px" }}
+            onClick={() => {
+                onClick(index);
+            }}
+        >
+            <Box
+                className="cssGridMask"
+                style={{
+                    background:
+                        "linear-gradient(180deg, #000000 0%, rgba(0, 0, 0, 0.3) 25.79%)",
+                }}
+            >
                 <Typography>{dayOfWeek}</Typography>
             </Box>
             <Box
-                className="cssImage"
+                className="cssGridImage"
                 style={{
                     backgroundImage: `url(${imgSrc})`,
                     height: "100%",
                     width: "100%",
                 }}
             ></Box>
-        </Container>
+        </Box>
     );
 };
 export const ReportsPagination = ({
@@ -51,7 +66,11 @@ export const ReportsPagination = ({
         setPageIndex(value);
     }; */
     return (
-        <nav style={{ display: "flex", height: "150px" }}>
+        <nav
+            id="PaginationNavBar"
+            className="cssGridMask"
+            style={{ display: "flex", height: "150px" }}
+        >
             <List sx={{ display: "flex", flex: "1" }}>
                 {items.map(({ page, type, selected, ...item }, index) => {
                     let children = null;
@@ -63,6 +82,7 @@ export const ReportsPagination = ({
                             <ReportPaginationButton
                                 //What does {...item} do here?
                                 {...item}
+                                index={index}
                                 dayData={weekData[index]}
                                 onClick={() => handleChange(index)}
                             />
@@ -137,6 +157,7 @@ export const ReportsPagination2 = ({
                                 {...items}
                             >
                                 <ReportPaginationButton
+                                    index={0}
                                     dayData={weekData[index]}
                                     onClick={() => handleChange(index)}
                                 />
