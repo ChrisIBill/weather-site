@@ -7,9 +7,6 @@ import {
 export default function sanitizeWeatherData(weatherData: any) {}
 
 function convertTempsToString(x: number | undefined) {
-    return Math.trunc(x || Infinity);
-}
-function temperatureString(x: number | undefined) {
     return Math.trunc(x || Infinity) + "°";
 }
 const getAvgTemp = (...temps: (number | undefined)[]) => {

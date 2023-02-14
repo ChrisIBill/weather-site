@@ -71,10 +71,10 @@ export interface WeatherAlertDataType {
     tags?: any[];
 }
 export interface WeatherDataType {
-    current?: CurrentWeatherDataType;
-    minutely?: MinutelyWeatherDataType[];
-    hourly?: HourlyWeatherDataType[];
-    daily?: DailyWeatherDataType[];
+    current: CurrentWeatherDataType;
+    minutely: MinutelyWeatherDataType[];
+    hourly: HourlyWeatherDataType[];
+    daily: DailyWeatherDataType[];
     alerts?: WeatherAlertDataType[];
 }
 

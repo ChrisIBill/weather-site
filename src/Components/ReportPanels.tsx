@@ -1,7 +1,8 @@
 import { Container, Typography, Box } from "@mui/material";
 import Grid2 from "@mui/material/Unstable_Grid2";
 import { useState } from "react";
-import { DailyWeatherDataType } from "../lib/interfaces";
+import { DailyWeatherDataType, WeatherDataType } from "../lib/interfaces";
+import { WeatherAreaChart } from "./weatherCharts";
 
 function temperatureString(x: number | undefined) {
     return Math.trunc(x || Infinity) + "°";
@@ -24,7 +25,6 @@ const WeatherDataPanel = (weatherData: DailyWeatherDataType) => {
         night: [temperatureString(temp.night), temperatureString(feels.night)],
     };
     const handleClick = () => {
-        console.log("click");
         setPanelType(panelType === "Temperatures" ? "Misc" : "Temperatures");
     };
     const PanelContent = () => {
@@ -102,7 +102,11 @@ const WeatherDataPanel = (weatherData: DailyWeatherDataType) => {
         </Box>
     );
 };
-const WeatherChartsPanel = () => {
+const WeatherChartsPanel = ({
+    weatherData,
+}: {
+    weatherData: WeatherDataType;
+}) => {
     return (
         <Box
             sx={{
@@ -114,17 +118,25 @@ const WeatherChartsPanel = () => {
                     backgroundColor: "#00000060",
                 },
             }}
-        ></Box>
+        >
+            <WeatherAreaChart weatherData={weatherData} />
+        </Box>
     );
 };
-export const ReportPanels = (weatherData: DailyWeatherDataType) => {
+export const ReportPanels = ({
+    weatherData,
+    numDay,
+}: {
+    weatherData: WeatherDataType;
+    numDay: number;
+}) => {
     return (
         <Grid2 container spacing={2}>
             <Grid2 md={12} lg={6}>
-                {WeatherDataPanel(weatherData)}
+                {WeatherDataPanel(weatherData.daily[numDay])}
             </Grid2>
             <Grid2 md={12} lg={6}>
-                <WeatherChartsPanel />
+                <WeatherChartsPanel weatherData={weatherData} />
             </Grid2>
         </Grid2>
     );

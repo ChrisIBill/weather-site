@@ -135,7 +135,7 @@ const MakeWeatherReport = ({
             >
                 <HeaderDisplay />
                 <Divider />
-                {ReportPanels(dayWeatherData)}
+                <ReportPanels dayWeatherData />
                 {/* {isExpanded ? (
                     <ul style={{ padding: "0", listStyle: "none" }}>
                         {ExtendedDisplay}
