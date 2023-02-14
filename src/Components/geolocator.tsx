@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { GoogleMapsAPIKey } from "../lib/APIKeys";
+import { GoogleMapsAPIKey } from "../Private/APIKeys";
 //import "./testData";
 type Coords = [number, number] | undefined;
 type locType = "Zip Code" | "City" | "Coordinates";

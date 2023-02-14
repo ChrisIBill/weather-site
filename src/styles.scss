@@ -29,7 +29,8 @@
 }
 #PaginationNavBar {
     z-index: 2;
-    position:relative;
-    bottom: -75%;
+    width: 100%;
+    position:absolute;
+    bottom: 0;
     background-color: #FFFFFF2B;
 }

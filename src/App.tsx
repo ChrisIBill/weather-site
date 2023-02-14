@@ -4,7 +4,7 @@ import { ThemeProvider } from "@emotion/react";
 import { Box, Container, CssBaseline } from "@mui/material";
 import siteTheme from "./lib/siteTheme";
 import UserLocationPanel from "./Components/UserLocationPanel";
-import { GoogleMapsAPIKey } from "./lib/APIKeys";
+import { GoogleMapsAPIKey } from "./Private/APIKeys";
 import { getGeolocation } from "./Components/geolocator";
 import { DailyWeatherReports } from "./Components/weatherReports";
 import {
@@ -91,7 +91,7 @@ function App() {
             GetOpenWeatherData(userCoords);
         }
     }, [userCoords]);
-   /*  useEffect(() => {
+    /*  useEffect(() => {
         if (userWeather?.hourly) {
             //convertDataForReport(userWeather.hourly);
         }
