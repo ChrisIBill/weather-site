@@ -4,7 +4,6 @@ import { ThemeProvider } from "@emotion/react";
 import { Box, Container, CssBaseline } from "@mui/material";
 import siteTheme from "./lib/siteTheme";
 import UserLocationPanel from "./Components/UserLocationPanel";
-import { GoogleMapsAPIKey } from "./Private/APIKeys";
 import { getGeolocation } from "./Components/geolocator";
 import { DailyWeatherReports } from "./Components/weatherReports";
 import {
@@ -15,9 +14,6 @@ import {
     WeatherDataType,
 } from "./lib/interfaces";
 import { Pending } from "@mui/icons-material";
-import { useHorizontalScroll } from "./Components/horzScroll";
-import { WeatherAreaChart } from "./Components/weatherCharts";
-import { sanitizeDailyWeatherData } from "./Components/dataHandler";
 //const WeatherAPIsrc = `https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&exclude=${part}&appid=${API key}&units=${/* Metric or Imperial */}`;
 const WeatherAPISrc = `FarTestWeatherData.json`;
 type Coords = [number, number];
@@ -125,7 +121,10 @@ function App() {
                     />
                 )}
                 {userWeather?.daily ? (
-                    <DailyWeatherReports WeatherData={userWeather.daily} />
+                    <DailyWeatherReports
+                        WeatherData={userWeather.daily}
+                        hourlyWeatherData={userWeather.hourly}
+                    />
                 ) : (
                     <LoadingScreen />
                 )}
