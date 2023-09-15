@@ -1,12 +1,13 @@
 import "./App.css";
+import React from "react";
 import { createContext, SetStateAction, useEffect, useState } from "react";
 import { ThemeProvider } from "@emotion/react";
-import { Box, Container, CssBaseline } from "@mui/material";
+import { Box, Container, CssBaseline, useMediaQuery } from "@mui/material";
 import siteTheme from "./lib/siteTheme";
 import UserLocationPanel from "./Components/UserLocationPanel";
 import GoogleMapsAPIKey from "./lib/APIKeys";
 import { getGeolocation } from "./Components/geolocator";
-import { WeatherReports } from "./Components/weatherReports";
+import { WeatherReportDisplay } from "./Components/weatherReports";
 import { AreaChartDataType, AreaChartHandlerProps, HourlyWeatherDataType, WeatherDataType } from "./lib/interfaces";
 import { Pending } from "@mui/icons-material";
 import { useHorizontalScroll } from "./Components/horzScroll";
@@ -25,12 +26,12 @@ interface Elem {
 const LoadingScreen = () => {
 	return <Pending />;
 };
-function convertDataForReport(data: HourlyWeatherDataType[]) {}
 function App() {
 	const [isLoaded, setIsLoaded] = useState(false);
 	const [hasLocation, setHasLocation] = useState(false);
 	const [userCoords, setUserCoords] = useState<Coords>();
 	const [userWeather, setUserWeather] = useState<WeatherDataType>();
+	const isMobile = useMediaQuery("(min-width:1100px)");
 
 	//Async User Location Data Request
 	const resolveCallback = (result: any) => {
@@ -51,6 +52,11 @@ function App() {
 		setUserCoords(loc);
 		setHasLocation(true);
 		console.log("Setting Coords: " + loc);
+	};
+	const LocationHandler = () => {
+		return (
+			<Box>{hasLocation ? <></> : <UserLocationPanel submitCoords={handleManualCoords} isActive={!hasLocation} />}</Box>
+		);
 	};
 	const GetOpenWeatherData = async (coords: Coords) => {
 		fetch(WeatherAPISrc)
@@ -101,16 +107,17 @@ function App() {
 		<ThemeProvider theme={siteTheme}>
 			<Container id="App" component="main" disableGutters={true} maxWidth={false} sx={{ flexDirection: "column" }}>
 				<CssBaseline enableColorScheme />
-				{hasLocation ? <></> : <UserLocationPanel submitCoords={handleManualCoords} isActive={!hasLocation} />}
-				<Box style={{ flexGrow: "1" /* , overflow: "auto" */ }} ref={useHorizontalScroll()}>
-					{userWeather?.daily ? <WeatherReports WeatherData={userWeather.daily} /> : <LoadingScreen />}
-				</Box>
-				<Box sx={{ flexGrow: "1", height: "50%", width: 1 / 1 }}>
+				<LocationHandler />
+				<>{userWeather?.daily ? <WeatherReportDisplay WeatherData={userWeather.daily} /> : <LoadingScreen />}</>
+
+				{/* <Box sx={{ flexGrow: "1", height: "50%", width: 1 / 1 }}>
 					{userWeather?.hourly ? <WeatherAreaChart weatherData={userWeather} /> : <LoadingScreen />}
-				</Box>
+				</Box> */}
 			</Container>
 		</ThemeProvider>
 	);
 }
-
+/* <Box style={{ flexGrow: "1", overflow: "auto" }} ref={useHorizontalScroll()}>
+					{userWeather?.daily ? <WeatherReportDisplay WeatherData={userWeather.daily} /> : <LoadingScreen />}
+				</Box> */
 export default App;

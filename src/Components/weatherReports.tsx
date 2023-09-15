@@ -1,5 +1,5 @@
 import { AspectRatio } from "@mui/icons-material";
-import { Divider, Drawer, Paper, Skeleton, Typography } from "@mui/material";
+import { Box, Divider, Drawer, Paper, Skeleton, Typography } from "@mui/material";
 import { red } from "@mui/material/colors";
 import Grid2 from "@mui/material/Unstable_Grid2";
 import { height } from "@mui/system";
@@ -44,7 +44,7 @@ const MakeWeatherReport = ({
 	WeatherData: WeatherReportDataType;
 	displayInfo: DisplayInfoType;
 }) => {
-	const [isExpanded, setIsExpanded] = useState(false);
+	const [isExpanded, setIsExpanded] = useState(true);
 	let reportLabel, reportInfo;
 	/* const [height, setHeight] = useState(window.innerWidth);
 	console.log(height);
@@ -90,7 +90,7 @@ const MakeWeatherReport = ({
 	/* useEffect(() => {
 		window.addEventListener("resize", (event) => {
 			reportSize = window.innerHeight > 600 ? 600 : 200;
-			console.log(reportSize);
+			console.log(reportSize);isExpanded
 		});
 		return window.removeEventListener("resize", (event) => {
 			reportSize = window.innerHeight > 600 ? 600 : 200;
@@ -108,13 +108,12 @@ const MakeWeatherReport = ({
 			style={{
 				boxShadow: `inset 0 0 0 1000px rgba(116, 176, 189, 0.4)`,
 				backgroundImage: `url(${displayInfo.imageSrc})`,
-				height: "600px",
+				flexGrow: 1,
 				backgroundSize: "cover",
 				backgroundPositionY: "50%",
 				//filter: "blur(3px)",
 			}}
 			onClick={() => {
-				console.log("click");
 				setIsExpanded(!isExpanded);
 			}}
 			sx={[
@@ -144,6 +143,7 @@ const MakeWeatherReport = ({
 export const WeatherReports = ({ WeatherData }: { WeatherData: DailyWeatherDataType[] }) => {
 	console.log("Generating Daily Reports");
 	//console.log(WeatherData);
+	WeatherData.pop();
 	const displayInfoArr: DisplayInfoType[] = [];
 	const reportsData: WeatherReportDataType[] = WeatherData.map((elem, index) => {
 		const date = elem.dt;
@@ -220,16 +220,25 @@ export const WeatherReports = ({ WeatherData }: { WeatherData: DailyWeatherDataT
 	});
 
 	const reports = Object.keys(reportsData).map((elem, index) => (
-		<Grid2 /* xs={12} sm={6} md={3} */ sm={2} key={elem}>
+		<Grid2
+			/* xs={12} sm={6} md={3} */ md={12}
+			key={elem}
+			sx={
+				{
+					/* flexBasis: "100%" */
+				}
+			}
+		>
 			{MakeWeatherReport({ WeatherData: reportsData[index], displayInfo: displayInfoArr[index] })}
 		</Grid2>
 	));
 	return (
 		<Grid2
-			sx={{ flexGrow: 1, overflow: "auto" }}
+			sx={{ overflow: "scroll" }}
 			container
-			wrap={"nowrap"}
-			spacing={4}
+			wrap={"wrap"}
+			direction={"column"}
+			//spacing={4}
 			//disableEqualOverflow
 		>
 			{reports}
@@ -240,6 +249,85 @@ export const WeatherReports = ({ WeatherData }: { WeatherData: DailyWeatherDataT
 	}); */
 };
 
+export const WeatherReportDisplay = ({ WeatherData }: { WeatherData: DailyWeatherDataType[] }) => {
+	console.log("Generating Daily Reports");
+	//console.log(WeatherData);
+	WeatherData.pop();
+	const displayInfoArr: DisplayInfoType[] = [];
+	const reportsData: WeatherReportDataType[] = WeatherData.map((elem, index) => {
+		const date = elem.dt;
+		const weatherCondition = elem.weather && elem.weather[0] ? elem.weather[0].main : undefined;
+		const imageSrc = (str: string | undefined) => {
+			switch (str) {
+				case "Thunderstorm":
+					return "/weather-images/id2xx.jpg";
+				case "Drizzle":
+					return "/weather-images/id3xx-5xx.jpg";
+				case "Rain":
+					return "/weather-images/id3xx-5xx.jpg";
+				case "Snow":
+					return "/weather-images/id6xx.jpg";
+				case "Clear":
+					return "/weather-images/id800.jpg";
+				case "Clouds":
+					return "/weather-images/id80x.jpg";
+				default:
+					return "/weather-images/errImg.jpg";
+			}
+		};
+		if (elem.weather && elem.weather[0]) {
+			displayInfoArr.push({
+				imageSrc: imageSrc(weatherCondition),
+				effects: "inset 0 0 0 1000px rgba(116, 160, 229, .3)",
+			});
+		}
+		const reportData: ReportInfo[] = [
+			{
+				label: "Temperature: ",
+				info: `${elem.temp.day}`,
+			},
+			{
+				label: "Weather: ",
+				info: `${weatherCondition || "Error"}`,
+			},
+			{
+				label: "Chance: ",
+				info: `${elem.pop || "Error"}`,
+			},
+			{
+				label: "Low: ",
+				info: `${elem.temp.min}`,
+			},
+			{
+				label: "High: ",
+				info: `${elem.temp.max}`,
+			},
+			{
+				label: "Feels Like: ",
+				info: `${elem.temp.day}`,
+			},
+			{
+				label: "Wind Speed: ",
+				info: `${elem.windSpeed}`,
+			},
+		];
+		//const date = new Date(elem.dt);
+		console.log("Date: " + date);
+		const curReportData: WeatherReportDataType = {
+			time: date.toString(),
+			dataset: reportData,
+		};
+
+		return curReportData;
+	});
+
+	const Reports = Object.keys(reportsData).map((elem, index) => (
+		<Box /* xs={12} sm={6} md={3} */ style={{ display: "flex", flexGrow: "1" }} key={elem}>
+			{MakeWeatherReport({ WeatherData: reportsData[index], displayInfo: displayInfoArr[index] })}
+		</Box>
+	));
+	return <>{Reports}</>;
+};
 /* export const HourlyWeatherReport = ({ hourlyWeatherData }: { hourlyWeatherData: HourlyWeatherType[] }) => {
 	//const temps: number[] = Object.keys(hourlyWeatherData).map((elem, index) => elem.temp);
 	//<LineChart width={600} height={300} data=
