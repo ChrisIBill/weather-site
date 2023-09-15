@@ -38,6 +38,7 @@ export interface DailyWeatherDataType {
 	};
 	windSpeed?: number;
 	pop: number;
+	humidity?: number;
 	weather?: [
 		{
 			id: number;

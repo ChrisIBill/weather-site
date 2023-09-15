@@ -9,6 +9,7 @@ import { JsxElement } from "typescript";
 import { DailyWeatherDataType, ReportInfo, WeatherDataType, WeatherReportDataType } from "../lib/interfaces";
 import errImg from "../weather-images/errImg.jpg";
 import { id2xx } from "../weather-images/id2xx.jpg";
+import { weatherImgGenerator } from "../lib/lib";
 
 interface DisplayInfoType {
 	imageSrc: string;
@@ -142,43 +143,19 @@ const MakeWeatherReport = ({
 
 export const WeatherReports = ({ WeatherData }: { WeatherData: DailyWeatherDataType[] }) => {
 	console.log("Generating Daily Reports");
-	//console.log(WeatherData);
 	WeatherData.pop();
 	const displayInfoArr: DisplayInfoType[] = [];
 	const reportsData: WeatherReportDataType[] = WeatherData.map((elem, index) => {
 		const date = elem.dt;
 		const weatherCondition = elem.weather && elem.weather[0] ? elem.weather[0].main : undefined;
-		const imageSrc = (str: string | undefined) => {
-			switch (str) {
-				case "Thunderstorm":
-					return "/weather-images/id2xx.jpg";
-				case "Drizzle":
-					return "/weather-images/id3xx-5xx.jpg";
-				case "Rain":
-					return "/weather-images/id3xx-5xx.jpg";
-				case "Snow":
-					return "/weather-images/id6xx.jpg";
-				case "Clear":
-					return "/weather-images/id800.jpg";
-				case "Clouds":
-					return "/weather-images/id80x.jpg";
-				default:
-					return "/weather-images/errImg.jpg";
-			}
-		};
+
 		if (elem.weather && elem.weather[0]) {
 			displayInfoArr.push({
-				imageSrc: imageSrc(weatherCondition),
+				imageSrc: weatherImgGenerator(weatherCondition),
 				effects: "inset 0 0 0 1000px rgba(116, 160, 229, .3)",
 			});
 		}
-		/* const reportData: ReportInfo[] = [];
-		for (const [key, value] of Object.entries(elem)) {
-			reportData.push({
-				label: `${key}`,
-				info: `${value}`,
-			});
-		} */
+
 		const reportData: ReportInfo[] = [
 			{
 				label: "Temperature: ",
@@ -209,6 +186,7 @@ export const WeatherReports = ({ WeatherData }: { WeatherData: DailyWeatherDataT
 				info: `${elem.windSpeed}`,
 			},
 		];
+
 		//const date = new Date(elem.dt);
 		console.log("Date: " + date);
 		const curReportData: WeatherReportDataType = {
@@ -251,33 +229,15 @@ export const WeatherReports = ({ WeatherData }: { WeatherData: DailyWeatherDataT
 
 export const WeatherReportDisplay = ({ WeatherData }: { WeatherData: DailyWeatherDataType[] }) => {
 	console.log("Generating Daily Reports");
-	//console.log(WeatherData);
 	WeatherData.pop();
 	const displayInfoArr: DisplayInfoType[] = [];
 	const reportsData: WeatherReportDataType[] = WeatherData.map((elem, index) => {
 		const date = elem.dt;
 		const weatherCondition = elem.weather && elem.weather[0] ? elem.weather[0].main : undefined;
-		const imageSrc = (str: string | undefined) => {
-			switch (str) {
-				case "Thunderstorm":
-					return "/weather-images/id2xx.jpg";
-				case "Drizzle":
-					return "/weather-images/id3xx-5xx.jpg";
-				case "Rain":
-					return "/weather-images/id3xx-5xx.jpg";
-				case "Snow":
-					return "/weather-images/id6xx.jpg";
-				case "Clear":
-					return "/weather-images/id800.jpg";
-				case "Clouds":
-					return "/weather-images/id80x.jpg";
-				default:
-					return "/weather-images/errImg.jpg";
-			}
-		};
+
 		if (elem.weather && elem.weather[0]) {
 			displayInfoArr.push({
-				imageSrc: imageSrc(weatherCondition),
+				imageSrc: weatherImgGenerator(weatherCondition),
 				effects: "inset 0 0 0 1000px rgba(116, 160, 229, .3)",
 			});
 		}
@@ -310,8 +270,11 @@ export const WeatherReportDisplay = ({ WeatherData }: { WeatherData: DailyWeathe
 				label: "Wind Speed: ",
 				info: `${elem.windSpeed}`,
 			},
+			{
+				label: "Humidity: ",
+				info: `${elem.humidity}`,
+			},
 		];
-		//const date = new Date(elem.dt);
 		console.log("Date: " + date);
 		const curReportData: WeatherReportDataType = {
 			time: date.toString(),
