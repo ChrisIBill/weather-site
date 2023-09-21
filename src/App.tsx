@@ -31,17 +31,17 @@ function App() {
 	const [userWeather, setUserWeather] = useState<WeatherDataType>();
 
 	//Async User Location Data Request
-	const resolveCallback = (result: any) => {
+	const resolveGeoCallback = (result: any) => {
 		setUserCoords(result);
 		setHasLocation(true);
 	};
-	const failCallback = (error: any) => {
+	const failGeoCallback = (error: any) => {
 		console.log("getGeolocation Failed");
 		console.log(error.message);
 	};
 	function asyncUserLocation() {
 		console.log("called async");
-		getGeolocation.then(resolveCallback, failCallback);
+		getGeolocation.then(resolveGeoCallback, failGeoCallback);
 	}
 	asyncUserLocation();
 
