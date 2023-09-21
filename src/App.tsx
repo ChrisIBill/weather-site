@@ -15,12 +15,10 @@ import { WeatherAreaChart } from "./Components/weatherCharts";
 //const WeatherAPIsrc = `https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&exclude=${part}&appid=${API key}&units=${/* Metric or Imperial */}`;
 const WeatherAPISrc = `FarTestWeatherData.json`;
 type Coords = [number, number];
+
 interface User {
 	id?: string | undefined;
 	loc?: Coords;
-}
-interface Elem {
-	temp: { day: number };
 }
 
 const LoadingScreen = () => {
@@ -31,7 +29,6 @@ function App() {
 	const [hasLocation, setHasLocation] = useState(false);
 	const [userCoords, setUserCoords] = useState<Coords>();
 	const [userWeather, setUserWeather] = useState<WeatherDataType>();
-	const isMobile = useMediaQuery("(min-width:1100px)");
 
 	//Async User Location Data Request
 	const resolveCallback = (result: any) => {
@@ -74,16 +71,6 @@ function App() {
 	};
 
 	useEffect(() => {
-		let ignore = false;
-		console.log("Mounted");
-
-		return () => {
-			ignore = true;
-			console.log("Unmounting");
-		};
-	}, []);
-
-	useEffect(() => {
 		if (userCoords) {
 			console.log("Getting weather data for coordinates: " + userCoords);
 			GetOpenWeatherData(userCoords);
@@ -96,13 +83,7 @@ function App() {
 			}
 		}
 	});
-	useEffect(() => {
-		console.log("Re-rendering");
-		/* let ignore = false;
-		if (!ignore) {
-			userWeather ? DailyWeatherReports(userWeather.daily) : console.log("Error: unexpected weather data");
-		} */
-	}, [userWeather]);
+
 	return (
 		<ThemeProvider theme={siteTheme}>
 			<Container id="App" component="main" disableGutters={true} maxWidth={false} sx={{ flexDirection: "column" }}>
