@@ -15,17 +15,16 @@ function errorCallback(result: any) {
 	console.log("Fail");
 	console.log(result);
 }
+
 export const getGeolocation = new Promise((resolve, reject) => {
 	const usrCoords: any[] = [];
 
 	function success(pos: GeolocationPosition) {
 		const crd = pos.coords;
 
-		console.log("Your current position is:");
-		console.log(`Latitude : ${crd.latitude}`);
-		console.log(`Longitude: ${crd.longitude}`);
-		console.log(`More or less ${crd.accuracy} meters.`);
-		usrCoords.push(crd.latitude, crd.longitude);
+		console.log("Successfully obtained user location");
+		console.info("Received coords object: " + crd);
+		usrCoords.push(crd.latitude, crd.longitude, crd.accuracy);
 		resolve(usrCoords);
 	}
 
@@ -79,7 +78,7 @@ export const getGeocode = async (loc?: any) => {
 			}
 		);
 };
-export const getCoords = (loc?: string) => {
+export async function getCoords(loc?: string) {
 	console.log("getCoords Loc: " + loc);
 	return Promise.any([getGeocode(loc), getGeolocation]).then((value) => console.log("Value: " + value));
-};
+}

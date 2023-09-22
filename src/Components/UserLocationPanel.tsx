@@ -78,6 +78,22 @@ const UserLocationPanel = ({ submitCoords, isActive }: { submitCoords: any; isAc
 		}
 	};
 
+	const handleChange = (e) => {
+		const regex = /^[0-9\b]+$/;
+		if (e.target.value === "" || regex.test(e.target.value)) {
+			setZipCode(e.target.value);
+		}
+		if (e.keyCode == 13) {
+			if (zipCodeRegEx.test(zipCode)) {
+				setIsInputError(false);
+				getGeocode(zipCode).then((value) => submitCoords(value));
+				//setIsValid(true);
+			} else {
+				setIsInputError(true);
+			}
+		}
+	};
+
 	return (
 		<Backdrop
 			//onSubmit={handleEnterKey}
@@ -105,9 +121,8 @@ const UserLocationPanel = ({ submitCoords, isActive }: { submitCoords: any; isAc
 								variant="outlined"
 								size="small"
 								inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
-								onChange={(event: ChangeEvent<HTMLInputElement>) => {
-									setZipCode(event.target.value);
-								}}
+								onChange={(e) => handleChange(e)}
+								value={zipCode}
 							/>
 						</FormControl>
 						{/*<FormControl sx={{ width: 1 / 3 }} size="small">
