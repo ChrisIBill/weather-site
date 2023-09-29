@@ -24,8 +24,6 @@ import ExampleSearchBox from "./autocomplete";
     isActive: boolean;
 } */
 
-type Coords = [number, number] | undefined;
-
 const LOCATION_TYPES = ["Zip Code", "City", "Coordinates"];
 type locType = (typeof LOCATION_TYPES)[number]; //"Zip Code" | "City" | "Coordinates";
 
@@ -62,13 +60,11 @@ const UserLocationPanel = ({
 	submitCoords: any;
 	isActive: boolean;
 }) => {
-	const [isOpen, setIsOpen] = useState(true);
 	const [addressType, setAddressType] = useState<locType>("Zip Code");
-	const [userAddress, setUserAddress] = useState<string>("");
 	const [zipCode, setZipCode] = useState<string>("75230");
-	const [city, setCity] = useState<string>("");
 	const [isInputError, setIsInputError] = useState<boolean>(false);
 	const [isValid, setIsValid] = useState<boolean>(false);
+	const [helperText, setHelperText] = useState<string>("");
 
 	const zipCodeRegEx = /(^\d{5}$)|(^\d{9}$)|(^\d{5}-\d{4}$)/;
 
@@ -80,6 +76,7 @@ const UserLocationPanel = ({
 				getGeocode(zipCode).then((value) => submitCoords(value));
 				//setIsValid(true);
 			} else {
+				setHelperText("Please enter a valid 5 digit US Zip Code");
 				setIsInputError(true);
 			}
 		}
@@ -90,6 +87,9 @@ const UserLocationPanel = ({
 		console.log(e.keycode);
 		if (e.target.value === "" || regex.test(e.target.value)) {
 			setZipCode(e.target.value);
+		} else {
+			setIsInputError(true);
+			setHelperText("Please enter numbers only");
 		}
 	};
 
@@ -126,9 +126,14 @@ const UserLocationPanel = ({
 								onChange={(e) => handleChange(e)}
 								onKeyDown={(e) => handleEnterKey(e)}
 								value={zipCode}
+								error={isInputError}
+								helperText={helperText}
 							/>
 						</FormControl>
-						{/*<FormControl sx={{ width: 1 / 3 }} size="small">
+						{/*
+							TODO:
+							Will need to add back in when we add city and street address
+							<FormControl sx={{ width: 1 / 3 }} size="small">
 							<ExampleSearchBox styles={{ container: inputStyle }} />
 							<Select
 								value={addressType}

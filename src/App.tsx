@@ -29,6 +29,7 @@ function App() {
 	const [hasLocation, setHasLocation] = useState(false);
 	const [userCoords, setUserCoords] = useState<CoordinatesType>();
 	const [userWeather, setUserWeather] = useState<WeatherDataType>();
+	const [helperText, setHelperText] = useState<string>("");
 
 	//Async User Location Data Request
 	const resolveGeoCallback = (result: CoordinatesType) => {
