@@ -1,5 +1,6 @@
 import { useState } from "react";
 import GoogleMapsAPIKey from "../lib/APIKeys";
+import { CoordinatesType } from "../lib/interfaces";
 //import "./testData";
 type Coords = [number, number] | undefined;
 type locType = "Zip Code" | "City" | "Coordinates";
@@ -7,25 +8,17 @@ type locType = "Zip Code" | "City" | "Coordinates";
 //const apiSrc = `https://maps.googleapis.com/maps/api/geocode/json?address=${loc}&key=${GoogleMapsAPIKey}`;
 const apiSrc = `testData.json`;
 
-function successCallback(result: any) {
-	console.log("Success");
-	console.log(result);
-}
-function errorCallback(result: any) {
-	console.log("Fail");
-	console.log(result);
-}
-
-export const getGeolocation = new Promise((resolve, reject) => {
-	const usrCoords: any[] = [];
-
+export const getGeolocation = new Promise<CoordinatesType>((resolve, reject) => {
 	function success(pos: GeolocationPosition) {
 		const crd = pos.coords;
 
 		console.log("Successfully obtained user location");
 		console.info("Received coords object: " + crd);
-		usrCoords.push(crd.latitude, crd.longitude, crd.accuracy);
-		resolve(usrCoords);
+		resolve({
+			latitude: pos.coords.latitude,
+			longitude: pos.coords.longitude,
+			accuracy: pos.coords.accuracy,
+		});
 	}
 
 	function error(err: GeolocationPositionError) {
@@ -45,8 +38,6 @@ export const getGeolocation = new Promise((resolve, reject) => {
 		maximumAge: 0,
 	};
 	navigator.geolocation.getCurrentPosition(success, error, options);
-	console.log("Usr coords: " + typeof usrCoords);
-	if (usrCoords) return usrCoords;
 });
 
 export const getGeocode = async (loc?: any) => {
@@ -79,6 +70,5 @@ export const getGeocode = async (loc?: any) => {
 		);
 };
 export async function getCoords(loc?: string) {
-	console.log("getCoords Loc: " + loc);
 	return Promise.any([getGeocode(loc), getGeolocation]).then((value) => console.log("Value: " + value));
 }

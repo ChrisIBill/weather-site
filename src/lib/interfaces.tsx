@@ -1,4 +1,8 @@
-export type Coords = [number, number];
+export interface CoordinatesType {
+	latitude: number;
+	longitude: number;
+	accuracy: number;
+}
 export interface CurrentWeatherDataType {
 	dt: number;
 	timezoneOffset: number;

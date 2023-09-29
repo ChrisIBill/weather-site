@@ -8,18 +8,18 @@ import UserLocationPanel from "./Components/UserLocationPanel";
 import GoogleMapsAPIKey from "./lib/APIKeys";
 import { getGeolocation } from "./Components/geolocator";
 import { WeatherReportDisplay } from "./Components/weatherReports";
-import { AreaChartDataType, AreaChartHandlerProps, HourlyWeatherDataType, WeatherDataType } from "./lib/interfaces";
+import {
+	AreaChartDataType,
+	AreaChartHandlerProps,
+	HourlyWeatherDataType,
+	CoordinatesType,
+	WeatherDataType,
+} from "./lib/interfaces";
 import { Pending } from "@mui/icons-material";
 import { useHorizontalScroll } from "./Components/horzScroll";
 import { WeatherAreaChart } from "./Components/weatherCharts";
 //const WeatherAPIsrc = `https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&exclude=${part}&appid=${API key}&units=${/* Metric or Imperial */}`;
 const WeatherAPISrc = `FarTestWeatherData.json`;
-type Coords = [number, number];
-
-interface User {
-	id?: string | undefined;
-	loc?: Coords;
-}
 
 const LoadingScreen = () => {
 	return <Pending />;
@@ -27,11 +27,11 @@ const LoadingScreen = () => {
 function App() {
 	const [isLoaded, setIsLoaded] = useState(false);
 	const [hasLocation, setHasLocation] = useState(false);
-	const [userCoords, setUserCoords] = useState<Coords>();
+	const [userCoords, setUserCoords] = useState<CoordinatesType>();
 	const [userWeather, setUserWeather] = useState<WeatherDataType>();
 
 	//Async User Location Data Request
-	const resolveGeoCallback = (result: any) => {
+	const resolveGeoCallback = (result: CoordinatesType) => {
 		setUserCoords(result);
 		setHasLocation(true);
 	};
@@ -50,12 +50,22 @@ function App() {
 		setHasLocation(true);
 		console.log("Setting Coords: " + loc);
 	};
+
 	const LocationHandler = () => {
 		return (
-			<Box>{hasLocation ? <></> : <UserLocationPanel submitCoords={handleManualCoords} isActive={!hasLocation} />}</Box>
+			<Box>
+				{hasLocation ? (
+					<></>
+				) : (
+					<UserLocationPanel
+						submitCoords={handleManualCoords}
+						isActive={!hasLocation}
+					/>
+				)}
+			</Box>
 		);
 	};
-	const GetOpenWeatherData = async (coords: Coords) => {
+	const GetOpenWeatherData = async (coords: CoordinatesType) => {
 		fetch(WeatherAPISrc)
 			.then((res) => res.json())
 			.then(
@@ -86,10 +96,22 @@ function App() {
 
 	return (
 		<ThemeProvider theme={siteTheme}>
-			<Container id="App" component="main" disableGutters={true} maxWidth={false} sx={{ flexDirection: "column" }}>
+			<Container
+				id="App"
+				component="main"
+				disableGutters={true}
+				maxWidth={false}
+				sx={{ flexDirection: "column" }}
+			>
 				<CssBaseline enableColorScheme />
 				<LocationHandler />
-				<>{userWeather?.daily ? <WeatherReportDisplay WeatherData={userWeather.daily} /> : <LoadingScreen />}</>
+				<>
+					{userWeather?.daily ? (
+						<WeatherReportDisplay WeatherData={userWeather.daily} />
+					) : (
+						<LoadingScreen />
+					)}
+				</>
 
 				{/* <Box sx={{ flexGrow: "1", height: "50%", width: 1 / 1 }}>
 					{userWeather?.hourly ? <WeatherAreaChart weatherData={userWeather} /> : <LoadingScreen />}

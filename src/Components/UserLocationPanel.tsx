@@ -55,7 +55,13 @@ const inputStyle: CSSProperties = {
 	right: "10px",
 };
 
-const UserLocationPanel = ({ submitCoords, isActive }: { submitCoords: any; isActive: boolean }) => {
+const UserLocationPanel = ({
+	submitCoords,
+	isActive,
+}: {
+	submitCoords: any;
+	isActive: boolean;
+}) => {
 	const [isOpen, setIsOpen] = useState(true);
 	const [addressType, setAddressType] = useState<locType>("Zip Code");
 	const [userAddress, setUserAddress] = useState<string>("");
@@ -69,6 +75,7 @@ const UserLocationPanel = ({ submitCoords, isActive }: { submitCoords: any; isAc
 	const handleEnterKey = async (e: { keyCode: number }) => {
 		if (e.keyCode == 13) {
 			if (zipCodeRegEx.test(zipCode)) {
+				console.log("Enter key pressed");
 				setIsInputError(false);
 				getGeocode(zipCode).then((value) => submitCoords(value));
 				//setIsValid(true);
@@ -78,19 +85,11 @@ const UserLocationPanel = ({ submitCoords, isActive }: { submitCoords: any; isAc
 		}
 	};
 
-	const handleChange = (e) => {
+	const handleChange = (e: any) => {
 		const regex = /^[0-9\b]+$/;
+		console.log(e.keycode);
 		if (e.target.value === "" || regex.test(e.target.value)) {
 			setZipCode(e.target.value);
-		}
-		if (e.keyCode == 13) {
-			if (zipCodeRegEx.test(zipCode)) {
-				setIsInputError(false);
-				getGeocode(zipCode).then((value) => submitCoords(value));
-				//setIsValid(true);
-			} else {
-				setIsInputError(true);
-			}
 		}
 	};
 
@@ -110,7 +109,10 @@ const UserLocationPanel = ({ submitCoords, isActive }: { submitCoords: any; isAc
 					<br />
 					<Typography align="center">Or Search by Location</Typography>
 					<br />
-					<FormGroup row={true} sx={{ alignItems: "center", justifyContent: "center" }}>
+					<FormGroup
+						row={true}
+						sx={{ alignItems: "center", justifyContent: "center" }}
+					>
 						<Typography align="center" sx={{ width: 1 / 3 }}>
 							Enter your
 						</Typography>
@@ -122,6 +124,7 @@ const UserLocationPanel = ({ submitCoords, isActive }: { submitCoords: any; isAc
 								size="small"
 								inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
 								onChange={(e) => handleChange(e)}
+								onKeyDown={(e) => handleEnterKey(e)}
 								value={zipCode}
 							/>
 						</FormControl>
