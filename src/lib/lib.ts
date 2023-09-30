@@ -24,3 +24,23 @@ export function weatherImgGenerator(str: string | undefined) {
 			return "/weather-images/errImg.jpg";
 	}
 }
+
+export const cancellablePromise = (promise: Promise<any | void>) => {
+	const isCancelled = { value: false };
+	const wrappedPromise = new Promise((resolve, reject) => {
+		promise
+			.then((d) => {
+				return isCancelled.value ? reject(isCancelled) : resolve(d);
+			})
+			.catch((e) => {
+				reject(isCancelled.value ? isCancelled : e);
+			});
+	});
+
+	return {
+		promise: wrappedPromise,
+		cancel: () => {
+			isCancelled.value = true;
+		},
+	};
+};

@@ -18,6 +18,7 @@ import {
 import { Pending } from "@mui/icons-material";
 import { useHorizontalScroll } from "./Components/horzScroll";
 import { WeatherAreaChart } from "./Components/weatherCharts";
+import { cancellablePromise } from "./lib/lib";
 //const WeatherAPIsrc = `https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&exclude=${part}&appid=${API key}&units=${/* Metric or Imperial */}`;
 const WeatherAPISrc = `FarTestWeatherData.json`;
 
@@ -42,7 +43,15 @@ function App() {
 	};
 	function asyncUserLocation() {
 		console.log("called async");
-		getGeolocation.then(resolveGeoCallback, failGeoCallback);
+		//Need to cancel this promise if user manually enters location
+		//or if user denies location
+		//or if user is on a device that doesn't support geolocation
+		//or if user is on a browser that doesn't support geolocation
+		cancellablePromise(getGeolocation).promise.then(
+			resolveGeoCallback,
+			failGeoCallback
+		);
+		const p = getGeolocation.then(resolveGeoCallback, failGeoCallback);
 	}
 	asyncUserLocation();
 

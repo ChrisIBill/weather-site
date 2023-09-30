@@ -14,10 +14,12 @@ import {
 	Typography,
 } from "@mui/material";
 import { Container } from "@mui/system";
-import React, { ChangeEvent, CSSProperties, useState } from "react";
+import React, { ChangeEvent, CSSProperties, useEffect, useState } from "react";
 import { getCoords, getGeocode, getGeolocation } from "./geolocator";
 
 import ExampleSearchBox from "./autocomplete";
+import { CoordinatesType } from "../lib/interfaces";
+import { cancellablePromise } from "../lib/lib";
 //import Geolocator from "./geolocator";
 /* interface ChildProps {
     onEnterKey: (e: {    keyCode: number;}, loc: any) => void
@@ -92,6 +94,28 @@ const UserLocationPanel = ({
 			setHelperText("Please enter numbers only");
 		}
 	};
+
+	const resolveGeoCallback = (result: CoordinatesType) => {
+		return submitCoords(result);
+	};
+	const failGeoCallback = (error: any) => {
+		console.log("getGeolocation Failed");
+		console.log(error.message);
+	};
+
+	useEffect(async () => {
+		const p = await getGeolocation.then(resolveGeoCallback, failGeoCallback);
+		const { promise, cancel } = cancellablePromise(p);
+		promise.then((d: any) => {
+			console.log("Promise resolved");
+			console.log(d);
+			submitCoords(d);
+		});
+		const clear = async () => {
+			await cancel();
+		};
+		clear();
+	}, []);
 
 	return (
 		<Backdrop

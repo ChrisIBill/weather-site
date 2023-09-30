@@ -8,37 +8,39 @@ type locType = "Zip Code" | "City" | "Coordinates";
 //const apiSrc = `https://maps.googleapis.com/maps/api/geocode/json?address=${loc}&key=${GoogleMapsAPIKey}`;
 const apiSrc = `testData.json`;
 
-export const getGeolocation = new Promise<CoordinatesType>((resolve, reject) => {
-	function success(pos: GeolocationPosition) {
-		const crd = pos.coords;
+export const getGeolocation = new Promise<CoordinatesType>(
+	(resolve, reject) => {
+		function success(pos: GeolocationPosition) {
+			const crd = pos.coords;
 
-		console.log("Successfully obtained user location");
-		console.info("Received coords object: " + crd);
-		resolve({
-			latitude: pos.coords.latitude,
-			longitude: pos.coords.longitude,
-			accuracy: pos.coords.accuracy,
-		});
-	}
+			console.log("Successfully obtained user location");
+			console.info("Received coords object: " + crd);
+			resolve({
+				latitude: pos.coords.latitude,
+				longitude: pos.coords.longitude,
+				accuracy: pos.coords.accuracy,
+			});
+		}
 
-	function error(err: GeolocationPositionError) {
-		console.warn(`ERROR(${err.code}): ${err.message}`);
-		reject("User denied");
-	}
+		function error(err: GeolocationPositionError) {
+			console.warn(`ERROR(${err.code}): ${err.message}`);
+			reject("User denied");
+		}
 
-	if ("geolocation" in navigator) {
-		console.log("Location Available");
-	} else {
-		console.log("Location Not Available");
-		reject("Location Not Available");
+		if ("geolocation" in navigator) {
+			console.log("Location Available");
+		} else {
+			console.log("Location Not Available");
+			reject("Location Not Available");
+		}
+		const options = {
+			enableHighAccuracy: true,
+			timeout: 5000,
+			maximumAge: 0,
+		};
+		return navigator.geolocation.getCurrentPosition(success, error, options);
 	}
-	const options = {
-		enableHighAccuracy: true,
-		timeout: 5000,
-		maximumAge: 0,
-	};
-	navigator.geolocation.getCurrentPosition(success, error, options);
-});
+);
 
 export const getGeocode = async (loc?: any) => {
 	const usrCoords: [any, any] = ["", ""];
@@ -52,7 +54,10 @@ export const getGeocode = async (loc?: any) => {
 		.then(
 			(result) => {
 				isLoaded = true;
-				usrCoords.push(result.results[0].geometry.location.lat, result.results[0].geometry.location.lng);
+				usrCoords.push(
+					result.results[0].geometry.location.lat,
+					result.results[0].geometry.location.lng
+				);
 				console.log(usrCoords);
 				console.log("Google Lat translation" + usrCoords[0]);
 				console.log("Google Lat translation" + usrCoords[1]);
@@ -70,5 +75,7 @@ export const getGeocode = async (loc?: any) => {
 		);
 };
 export async function getCoords(loc?: string) {
-	return Promise.any([getGeocode(loc), getGeolocation]).then((value) => console.log("Value: " + value));
+	return Promise.any([getGeocode(loc), getGeolocation]).then((value) =>
+		console.log("Value: " + value)
+	);
 }
